@@ -56,7 +56,7 @@
 #define APP_KEY "99887766554433221199887766554433"
 #define CHANNELS "0-15"
 #define BAND "AU915"
-//DR 1 SF9BW125
+// DR 1 SF9BW125
 #define DR "0"
 
 // ADC
@@ -316,7 +316,7 @@ void send_data_to_radio(void *pvParameters)
 	set_app_key(APP_KEY);
 
 	configure_regional_settings(BAND, DR, CHANNELS);
-	esp_spp_write(writeHandle, strlen("\nconfiguring regional settings..."), (uint8_t *)"\nconfiguring regional settings...");
+	esp_spp_write(writeHandle, strlen("\nConfiguring regional settings..."), (uint8_t *)"\nconfiguring regional settings...");
 	// Send  data
 	if (join_the_things_network())
 	{
@@ -341,15 +341,15 @@ void send_data_to_radio(void *pvParameters)
 				if (send_message(msg, 1) == 1)
 				{
 					ESP_LOGI(TAG_UART, "Message sent successfully");
-					esp_spp_write(writeHandle, strlen("\n"), (uint8_t *)"\n");
-					esp_spp_write(writeHandle, strlen(msg), (uint8_t *)msg);
 				}
 				else
 				{
 					ESP_LOGI(TAG_UART, "Message not sent");
 				}
+				esp_spp_write(writeHandle, strlen("\n"), (uint8_t *)"\n");
+				esp_spp_write(writeHandle, strlen(msg), (uint8_t *)msg);
 
-				vTaskDelay(pdMS_TO_TICKS(100));
+				vTaskDelay(pdMS_TO_TICKS(50));
 			}
 
 			set_radio_low_power();
@@ -358,14 +358,16 @@ void send_data_to_radio(void *pvParameters)
 			//	vTaskDelete(NULL);
 			ESP_LOGI(TAG_UART, "OK, suspending task!!!!!");
 			esp_spp_write(writeHandle, strlen("\nOK, suspending task!!!!!"), (uint8_t *)"\nOK, suspending task!!!!!");
-			vTaskSuspend(NULL);
+			esp_restart();
+			// vTaskSuspend(NULL);
 		}
 	}
 	else
 	{
 		ESP_LOGE(TAG_UART, "Failed to join the network");
 		esp_spp_write(writeHandle, strlen("\nFailed to join the network"), (uint8_t *)"\nFailed to join the network");
-		vTaskSuspend(NULL);
+		esp_restart();
+		// vTaskSuspend(NULL);
 	}
 }
 
